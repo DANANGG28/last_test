@@ -128,6 +128,16 @@ Semua service infrastruktur berjalan di Docker. Tidak perlu install PostgreSQL a
 |------------|--------------------|------|-------------|-----------------------------|
 | PostgreSQL | postgres:16-alpine | 5432 | 127.0.0.1   | user: `last_test_user`, pass: `secret`, db: `last_test` |
 | Redis      | redis:7-alpine     | 6379 | 127.0.0.1   | tanpa password              |
+| Adminer    | adminer            | 8080 | 127.0.0.1   | Web UI Database Dashboard   |
+
+### Dashboard Database (Adminer)
+
+Akses web dashboard database melalui browser di **http://localhost:8080**:
+- **System:** PostgreSQL
+- **Server:** `postgres`
+- **Username:** `last_test_user`
+- **Password:** `secret`
+- **Database:** `last_test`
 
 ### Docker Commands
 
