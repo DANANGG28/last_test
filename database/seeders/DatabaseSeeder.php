@@ -24,5 +24,8 @@ class DatabaseSeeder extends Seeder
 
         // Dummy users
         User::factory(5)->create();
+
+        // Dummy 10 Produk
+        $this->call(ProductSeeder::class);
     }
 }
