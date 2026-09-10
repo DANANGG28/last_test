@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Route;
 // Guest routes (belum login)
 Route::middleware('guest')->group(function () {
     Route::get('/',         [LoginController::class, 'create'])->name('login');
+    Route::post('/',        [LoginController::class, 'store']);
     Route::post('/login',   [LoginController::class, 'store']);
 
     Route::get('/register',  [RegisterController::class, 'create'])->name('register');

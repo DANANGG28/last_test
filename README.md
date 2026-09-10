@@ -129,15 +129,25 @@ docker compose logs -f     # Lihat logs realtime
 docker compose ps          # Lihat status containers
 ```
 
-## Akun Default
+## Akun Default untuk Login
 
-Setelah menjalankan `migrate --seed`, akun berikut tersedia:
+Setelah menjalankan `migrate --seed`, Anda dapat login menggunakan kredensial berikut:
 
-| Email               | Password   | Keterangan        |
-|---------------------|------------|--------------------|
-| admin@example.com   | password   | Akun admin utama   |
+| Email | Password | Keterangan |
+|---|---|---|
+| `admin@example.com` | `password` | Akun Admin Utama |
 
-Selain itu ada 5 user dummy yang dibuat otomatis oleh seeder.
+*Selain itu, 5 user dummy telah dibuat otomatis oleh seeder.*
+
+## Dashboard Database PostgreSQL (Adminer)
+
+Web GUI Dashboard untuk PostgreSQL dapat diakses melalui browser di **http://localhost:8080** dengan data login berikut:
+
+- **System:** PostgreSQL
+- **Server:** `postgres` (atau `127.0.0.1`)
+- **Username:** `last_test_user`
+- **Password:** `secret`
+- **Database:** `last_test`
 
 ## Perintah Makefile
 

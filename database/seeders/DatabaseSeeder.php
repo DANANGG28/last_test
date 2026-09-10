@@ -17,8 +17,9 @@ class DatabaseSeeder extends Seeder
     {
         // Admin user untuk testing
         User::factory()->create([
-            'name'  => 'Admin',
-            'email' => 'admin@example.com',
+            'name'     => 'Admin',
+            'email'    => 'admin@example.com',
+            'password' => 'password',
         ]);
 
         // Dummy users
