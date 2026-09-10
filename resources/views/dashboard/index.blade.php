@@ -3,146 +3,226 @@
 @section('header', 'Dashboard')
 
 @section('main')
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-    {{-- Card: Total Users --}}
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <div class="flex items-center">
-            <div class="flex-shrink-0 bg-indigo-100 rounded-lg p-3">
-                <svg class="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
-                </svg>
+<div class="space-y-6">
+    {{-- Greeting Banner (1 Solid Color, No Shadows, Clean & Simple) --}}
+    <div class="bg-indigo-600 rounded-xl p-6 sm:p-7 text-white">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+                <p class="text-xs font-semibold uppercase tracking-wider text-indigo-200 mb-1">
+                    Portal Manajemen &bull; {{ config('app.name') }}
+                </p>
+                <h2 class="text-xl sm:text-2xl font-bold tracking-tight">
+                    Selamat Datang, {{ auth()->user()->name }}!
+                </h2>
+                <p class="mt-1 text-xs sm:text-sm text-indigo-100 max-w-xl">
+                    Pantau statistik inventori produk dan kelola data aplikasi Anda secara terstruktur.
+                </p>
             </div>
-            <div class="ml-4">
-                <p class="text-sm font-medium text-gray-500">Total Users</p>
-                <p class="text-2xl font-bold text-gray-900">{{ $totalUsers }}</p>
+            <div class="flex items-center gap-2.5">
+                <a href="{{ route('products.create') }}"
+                   class="inline-flex items-center px-4 py-2 bg-white hover:bg-indigo-50 text-indigo-700 text-xs font-semibold rounded-lg transition-colors">
+                    <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                     Tambah Produk
+                </a>
+                <a href="{{ route('products.index') }}"
+                   class="inline-flex items-center px-4 py-2 bg-indigo-700 hover:bg-indigo-800 text-white text-xs font-semibold rounded-lg border border-indigo-500 transition-colors">
+                    Kelola Katalog 
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {{-- 4 Stat Cards: Products & Users Overview (Icon Sized Proportionally & Harmoniously) --}}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        {{-- Card 1: Total Produk --}}
+        <div class="bg-white rounded-xl p-5 border border-slate-200/80 shadow-xs hover:shadow-sm transition-shadow">
+            <div class="flex items-start justify-between">
+                <div class="min-w-0">
+                    <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Total Produk</p>
+                    <div class="flex items-baseline space-x-1.5 mt-1.5">
+                        <p class="text-2xl sm:text-3xl font-bold text-slate-900">{{ number_format($totalProducts, 0, ',', '.') }}</p>
+                        <span class="text-xs font-medium text-slate-400">item</span>
+                    </div>
+                    <p class="text-xs text-indigo-600 font-medium mt-1">
+                        {{ $activeProducts }} produk aktif dijual
+                    </p>
+                </div>
+                {{-- Compact icon badge --}}
+                <div class="w-9 h-9 rounded-lg bg-indigo-50 border border-indigo-100 text-indigo-600 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                    </svg>
+                </div>
+            </div>
+            <div class="mt-3.5 pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs">
+                <a href="{{ route('products.index') }}" class="text-indigo-600 hover:text-indigo-800 font-semibold inline-flex items-center">
+                    Lihat Semua &rarr;
+                </a>
+                <span class="text-slate-400 text-[11px]">Katalog</span>
+            </div>
+        </div>
+
+        {{-- Card 2: Perlu Restok (Stok <= 5) --}}
+        <div class="bg-white rounded-xl p-5 border border-slate-200/80 shadow-xs hover:shadow-sm transition-shadow">
+            <div class="flex items-start justify-between">
+                <div class="min-w-0">
+                    <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Perlu Restok</p>
+                    <div class="flex items-baseline space-x-1.5 mt-1.5">
+                        <p class="text-2xl sm:text-3xl font-bold {{ $lowStockProducts > 0 ? 'text-amber-600' : 'text-slate-900' }}">
+                            {{ number_format($lowStockProducts, 0, ',', '.') }}
+                        </p>
+                        <span class="text-xs font-medium text-slate-400">item</span>
+                    </div>
+                    <p class="text-xs text-slate-500 font-medium mt-1">
+                        Stok minim (&le; 5 unit)
+                    </p>
+                </div>
+                {{-- Compact icon badge --}}
+                <div class="w-9 h-9 rounded-lg bg-amber-50 border border-amber-100 text-amber-600 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                </div>
+            </div>
+            <div class="mt-3.5 pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs">
+                <a href="{{ route('products.index') }}" class="text-amber-600 hover:text-amber-800 font-semibold inline-flex items-center">
+                    Cek Stok &rarr;
+                </a>
+                <span class="text-slate-400 text-[11px]">Alert</span>
+            </div>
+        </div>
+
+        {{-- Card 3: Total Pengguna --}}
+        <div class="bg-white rounded-xl p-5 border border-slate-200/80 shadow-xs hover:shadow-sm transition-shadow">
+            <div class="flex items-start justify-between">
+                <div class="min-w-0">
+                    <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Total Pengguna</p>
+                    <div class="flex items-baseline space-x-1.5 mt-1.5">
+                        <p class="text-2xl sm:text-3xl font-bold text-slate-900">{{ number_format($totalUsers, 0, ',', '.') }}</p>
+                        <span class="text-xs font-medium text-slate-400">user</span>
+                    </div>
+                    <p class="text-xs text-emerald-600 font-medium mt-1">
+                        Pengguna terdaftar
+                    </p>
+                </div>
+                {{-- Compact icon badge --}}
+                <div class="w-9 h-9 rounded-lg bg-emerald-50 border border-emerald-100 text-emerald-600 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                </div>
+            </div>
+            <div class="mt-3.5 pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs">
+                <span class="text-emerald-600 font-semibold">Tersinkron</span>
+                <span class="text-slate-400 text-[11px]">Database</span>
+            </div>
+        </div>
+
+        {{-- Card 4: Terdaftar Hari Ini --}}
+        <div class="bg-white rounded-xl p-5 border border-slate-200/80 shadow-xs hover:shadow-sm transition-shadow">
+            <div class="flex items-start justify-between">
+                <div class="min-w-0">
+                    <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Daftar Hari Ini</p>
+                    <div class="flex items-baseline space-x-1.5 mt-1.5">
+                        <p class="text-2xl sm:text-3xl font-bold text-slate-900">{{ number_format($todayUsers, 0, ',', '.') }}</p>
+                        <span class="text-xs font-medium text-slate-400">user</span>
+                    </div>
+                    <p class="text-xs text-sky-600 font-medium mt-1">
+                        Pendaftar baru hari ini
+                    </p>
+                </div>
+                {{-- Compact icon badge --}}
+                <div class="w-9 h-9 rounded-lg bg-sky-50 border border-sky-100 text-sky-600 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                    </svg>
+                </div>
+            </div>
+            <div class="mt-3.5 pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs">
+                <span class="text-slate-400 text-[11px]">{{ date('d M Y') }}</span>
+                <span class="text-sky-600 font-semibold">Hari Ini</span>
             </div>
         </div>
     </div>
 
-    {{-- Card: Registered Today --}}
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <div class="flex items-center">
-            <div class="flex-shrink-0 bg-green-100 rounded-lg p-3">
-                <svg class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z" />
-                </svg>
+    {{-- Bottom Grid: User Terbaru & Info Sistem --}}
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {{-- Recent Users --}}
+        <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+            <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+                <h3 class="text-sm font-bold text-slate-900">User Terdaftar Terbaru</h3>
+                <span class="text-xs font-semibold text-slate-400">{{ $totalUsers }} Total</span>
             </div>
-            <div class="ml-4">
-                <p class="text-sm font-medium text-gray-500">Daftar Hari Ini</p>
-                <p class="text-2xl font-bold text-gray-900">{{ $todayUsers }}</p>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-slate-100">
+                    <thead class="bg-slate-50/75">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Nama</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Email</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Terdaftar</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        @forelse ($recentUsers as $user)
+                        <tr class="hover:bg-slate-50/75 transition-colors">
+                            <td class="px-6 py-3.5 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <div class="w-7 h-7 rounded-lg bg-indigo-50 border border-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-xs">
+                                        {{ strtoupper(substr($user->name, 0, 1)) }}
+                                    </div>
+                                    <span class="ml-2.5 text-xs font-semibold text-slate-900">{{ $user->name }}</span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-3.5 whitespace-nowrap text-xs text-slate-500">{{ $user->email }}</td>
+                            <td class="px-6 py-3.5 whitespace-nowrap text-xs text-slate-400">{{ $user->created_at->diffForHumans() }}</td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="3" class="px-6 py-6 text-center text-xs text-slate-400">Belum ada data user.</td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
         </div>
-    </div>
 
-    {{-- Card: App Status --}}
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <div class="flex items-center">
-            <div class="flex-shrink-0 bg-amber-100 rounded-lg p-3">
-                <svg class="h-6 w-6 text-amber-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                </svg>
+        {{-- Info Sistem & Quick Status --}}
+        <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-6 flex flex-col justify-between">
+            <div>
+                <h3 class="text-sm font-bold text-slate-900 mb-4">Informasi Sistem & Server</h3>
+                <dl class="space-y-3 text-xs">
+                    <div class="flex justify-between py-1.5 border-b border-slate-100">
+                        <dt class="text-slate-500 font-medium">Framework</dt>
+                        <dd class="font-semibold text-slate-900">Laravel v{{ app()->version() }}</dd>
+                    </div>
+                    <div class="flex justify-between py-1.5 border-b border-slate-100">
+                        <dt class="text-slate-500 font-medium">PHP Engine</dt>
+                        <dd class="font-semibold text-slate-900">PHP v{{ PHP_VERSION }}</dd>
+                    </div>
+                    <div class="flex justify-between py-1.5 border-b border-slate-100">
+                        <dt class="text-slate-500 font-medium">Database Driver</dt>
+                        <dd class="font-semibold text-slate-900 uppercase">{{ config('database.default') }}</dd>
+                    </div>
+                    <div class="flex justify-between py-1.5 border-b border-slate-100">
+                        <dt class="text-slate-500 font-medium">Cache & Session</dt>
+                        <dd class="font-semibold text-slate-900 capitalize">{{ config('cache.default') }} / {{ config('session.driver') }}</dd>
+                    </div>
+                    <div class="flex justify-between py-1.5">
+                        <dt class="text-slate-500 font-medium">Status Aplikasi</dt>
+                        <dd class="inline-flex items-center text-emerald-600 font-semibold">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"></span>
+                            {{ ucfirst(app()->environment()) }} Mode
+                        </dd>
+                    </div>
+                </dl>
             </div>
-            <div class="ml-4">
-                <p class="text-sm font-medium text-gray-500">App Environment</p>
-                <p class="text-2xl font-bold text-gray-900">{{ ucfirst(app()->environment()) }}</p>
+            <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400">
+                <span>Versi Portal: v1.0.0</span>
+                <span class="font-mono text-[11px]">{{ date('Y-m-d H:i') }}</span>
             </div>
         </div>
-    </div>
-</div>
-
-{{-- Recent Users Table --}}
-<div class="bg-white rounded-xl shadow-sm border border-gray-200">
-    <div class="px-6 py-4 border-b border-gray-200">
-        <h3 class="text-lg font-semibold text-gray-800">User Terbaru</h3>
-    </div>
-    <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-                <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Terdaftar</th>
-                </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-                @forelse ($recentUsers as $user)
-                <tr class="hover:bg-gray-50">
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $user->id }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="flex items-center">
-                            <div class="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center">
-                                <span class="text-sm font-medium text-indigo-600">{{ strtoupper(substr($user->name, 0, 1)) }}</span>
-                            </div>
-                            <span class="ml-3 text-sm font-medium text-gray-900">{{ $user->name }}</span>
-                        </div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $user->email }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $user->created_at->diffForHumans() }}</td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="4" class="px-6 py-8 text-center text-sm text-gray-500">Belum ada user terdaftar.</td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
-</div>
-
-{{-- System Info --}}
-<div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <h3 class="text-lg font-semibold text-gray-800 mb-4">Info Sistem</h3>
-        <dl class="space-y-3">
-            <div class="flex justify-between">
-                <dt class="text-sm text-gray-500">Laravel</dt>
-                <dd class="text-sm font-medium text-gray-900">v{{ app()->version() }}</dd>
-            </div>
-            <div class="flex justify-between">
-                <dt class="text-sm text-gray-500">PHP</dt>
-                <dd class="text-sm font-medium text-gray-900">v{{ PHP_VERSION }}</dd>
-            </div>
-            <div class="flex justify-between">
-                <dt class="text-sm text-gray-500">Database</dt>
-                <dd class="text-sm font-medium text-gray-900">{{ config('database.default') }}</dd>
-            </div>
-            <div class="flex justify-between">
-                <dt class="text-sm text-gray-500">Cache</dt>
-                <dd class="text-sm font-medium text-gray-900">{{ config('cache.default') }}</dd>
-            </div>
-            <div class="flex justify-between">
-                <dt class="text-sm text-gray-500">Session</dt>
-                <dd class="text-sm font-medium text-gray-900">{{ config('session.driver') }}</dd>
-            </div>
-        </dl>
-    </div>
-
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <h3 class="text-lg font-semibold text-gray-800 mb-4">Panduan Tim</h3>
-        <ul class="space-y-2 text-sm text-gray-600">
-            <li class="flex items-start">
-                <span class="text-indigo-500 mr-2 mt-0.5">1.</span>
-                Clone repo lalu jalankan <code class="bg-gray-100 px-1.5 py-0.5 rounded text-xs">make setup</code>
-            </li>
-            <li class="flex items-start">
-                <span class="text-indigo-500 mr-2 mt-0.5">2.</span>
-                Buat branch baru: <code class="bg-gray-100 px-1.5 py-0.5 rounded text-xs">git checkout -b fitur/nama-fitur</code>
-            </li>
-            <li class="flex items-start">
-                <span class="text-indigo-500 mr-2 mt-0.5">3.</span>
-                Commit perubahan: <code class="bg-gray-100 px-1.5 py-0.5 rounded text-xs">git add . && git commit -m "pesan"</code>
-            </li>
-            <li class="flex items-start">
-                <span class="text-indigo-500 mr-2 mt-0.5">4.</span>
-                Push branch: <code class="bg-gray-100 px-1.5 py-0.5 rounded text-xs">git push origin fitur/nama-fitur</code>
-            </li>
-            <li class="flex items-start">
-                <span class="text-indigo-500 mr-2 mt-0.5">5.</span>
-                Buka Pull Request di GitHub/GitLab
-            </li>
-        </ul>
     </div>
 </div>
 @endsection
