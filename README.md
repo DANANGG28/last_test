@@ -72,25 +72,6 @@ pecl install redis
 
 ## Setup Pertama Kali
 
-### Cara Cepat (Rekomendasi)
-
-```bash
-# 1. Clone repo
-git clone <url-repo> last_test
-cd last_test
-
-# 2. Jalankan setup otomatis
-#    (start Docker, install deps, migrate, seed, build assets)
-make setup
-
-# 3. Jalankan development server
-make dev
-```
-
-Aplikasi bisa diakses di **http://localhost:8000**
-
-### Cara Manual (Step-by-step)
-
 ```bash
 # 1. Clone repo
 git clone <url-repo> last_test
